@@ -82,9 +82,17 @@ public class EmpController {
 
     @PostMapping("updateEmp")
     public String update(@ModelAttribute(value = "emp")Emp emp,@RequestParam(value = "file")MultipartFile file) throws IOException {
-        System.out.println("cccc"+emp);
+        String fileName = file.getOriginalFilename();
+       if (fileName.length()!=0){
+           File photoFile = new File(filePath, fileName);
+           //判断当前系统是否存在上传路径，如果不存在则新建
+           if (!photoFile.getParentFile().exists()){
+               photoFile.getParentFile().mkdir();
+           }
+           file.transferTo(new File(filePath+File.separator+fileName));
+           emp.setPhoto("/images/"+fileName);
+       }
         empService.updateEmp(emp);
-        System.out.println(1);
         return "redirect:/emp/findAll";
 
     }
